@@ -1,0 +1,149 @@
+=====================================================================
+  FLASKR - COMANDOS PARA EL VIDEO (Windows / PowerShell)
+=====================================================================
+
+Copia y pega UN comando a la vez. Todos se ejecutan dentro de la
+carpeta del proyecto (recomendado: C:\flaskr-pruebas).
+
+
+---------------------------------------------------------------------
+ PARTE 1 - PREPARACION (UNA SOLA VEZ, ANTES DE GRABAR)
+---------------------------------------------------------------------
+
+1) Entrar a la carpeta del proyecto
+cd C:\flaskr-pruebas
+
+2) Crear el entorno virtual
+python -m venv .venv
+
+3) Permitir activar el entorno (solo afecta a esta ventana)
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+4) Activar el entorno (la linea debe empezar con (.venv))
+.\.venv\Scripts\Activate.ps1
+
+5) Instalar las herramientas (Flask, pytest, coverage, radon)
+pip install -r requirements.txt
+
+6) Instalar la aplicacion Flaskr
+pip install -e .
+
+7) Ensayo: debe decir "24 passed"
+pytest
+
+
+---------------------------------------------------------------------
+ PARTE 2 - ANTES DE CADA GRABACION
+---------------------------------------------------------------------
+
+Abrir PowerShell y ejecutar:
+
+cd C:\flaskr-pruebas
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+
+Borrar la base de datos de ensayos (si da error porque no existe, ignorar):
+Remove-Item -Recurse instance
+
+Limpiar la pantalla:
+cls
+
+
+---------------------------------------------------------------------
+ PARTE 3 - COMANDOS DURANTE EL VIDEO (EN ESTE ORDEN)
+---------------------------------------------------------------------
+
+[ESCENA 3 - Demostracion de la aplicacion]
+
+Crear la base de datos:
+flask --app flaskr init-db
+
+Levantar el servidor:
+flask --app flaskr run --debug
+
+Abrir en el navegador:
+http://127.0.0.1:5000
+
+Datos para la demo en el navegador:
+  - Register  -> usuario: demo   contrasena: demo123
+  - Log In    -> usuario: demo   contrasena: mala      (muestra "Incorrect password.")
+  - Log In    -> usuario: demo   contrasena: demo123   (entra)
+  - New       -> titulo: Mi primera publicacion        -> Save
+
+Detener el servidor:  Ctrl + C
+Limpiar pantalla:
+cls
+
+
+[ESCENA 4 - Prueba 1: funcional]
+
+pytest -v
+
+Resultado esperado: 24 passed
+
+
+[ESCENA 5 - Prueba 2: seguridad]
+
+cls
+pytest pruebas_seguridad -v -s
+
+Resultado esperado: 5 passed, con las lineas [CP-SEG-01], [CP-SEG-02], [CP-SEG-03]
+
+
+[ESCENA 6 - Metricas]
+
+cls
+
+Metrica 1 - Cobertura de codigo:
+coverage run -m pytest
+coverage report -m
+
+Resultado esperado: TOTAL 178 sentencias, 42 ramas, 100%
+
+Metrica 2 - Complejidad ciclomatica:
+radon cc flaskr -s -a
+
+Resultado esperado: Average complexity: A (2.4375); register - B (7)
+
+Metrica 3 - Indice de mantenibilidad:
+radon mi flaskr -s
+
+Resultado esperado: auth.py 62.92 / blog.py 65.22 / db.py 86.06 / __init__.py 92.39 (todos A)
+
+(Opcional) Reporte visual de cobertura en el navegador:
+coverage html
+start htmlcov\index.html
+
+
+---------------------------------------------------------------------
+ PROBLEMAS COMUNES
+---------------------------------------------------------------------
+
+"no se puede cargar el archivo Activate.ps1"
+   -> Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+"No module named flaskr"
+   -> pip install -e .   (dentro de la carpeta del proyecto)
+
+"Couldn't import C tracer" al usar coverage
+   -> La ruta de la carpeta es muy larga. Mover el proyecto a C:\flaskr-pruebas
+
+El puerto 5000 esta ocupado
+   -> flask --app flaskr run --debug --port 5001
+      y abrir http://127.0.0.1:5001
+
+
+---------------------------------------------------------------------
+ SUBIR A GITHUB (para el enlace del informe)
+---------------------------------------------------------------------
+
+git init
+git add .
+git commit -m "Flaskr: pruebas funcionales, de seguridad y metricas"
+
+Luego crear un repositorio vacio en github.com y ejecutar los dos
+comandos que GitHub muestra:
+git remote add origin https://github.com/USUARIO/NOMBRE-REPO.git
+git push -u origin main
+
+(Si "git push" dice que no existe "main":  git branch -M main  y repetir)

@@ -1,0 +1,23 @@
+[project]
+name = "flaskr"
+version = "1.0.0"
+description = "Flaskr (tutorial oficial de Flask) - pruebas y metricas de calidad"
+requires-python = ">=3.10"
+dependencies = ["flask"]
+
+[project.optional-dependencies]
+test = ["pytest", "coverage", "radon"]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "flaskr"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["flaskr"]
